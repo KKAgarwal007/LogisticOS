@@ -16,7 +16,7 @@ const DriversPage: React.FC = () => {
   useEffect(() => {
     const fetchDrivers = async () => {
       try {
-        const res = await axios.get('http://localhost:8080/api/data/drivers');
+        const res = await axios.get('https://logisticos-q046.onrender.com/api/data/drivers');
         const formatted = res.data.map((d: any) => ({
           ...d,
           id: d._id

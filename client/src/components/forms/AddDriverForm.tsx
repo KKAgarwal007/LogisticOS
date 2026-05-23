@@ -30,10 +30,10 @@ const AddDriverForm: React.FC<AddDriverFormProps> = ({ onSuccess, onCancel }) =>
     };
 
     try {
-      await axios.post('http://localhost:8080/api/data/drivers', payload);
+      await axios.post('https://logisticos-q046.onrender.com/api/data/drivers', payload);
       
       // Also create an activity log for this
-      await axios.post('http://localhost:8080/api/data/activities', {
+      await axios.post('https://logisticos-q046.onrender.com/api/data/activities', {
         type: 'success',
         title: 'New Driver Registered',
         description: `Driver ${payload.name} added to the active roster.`,

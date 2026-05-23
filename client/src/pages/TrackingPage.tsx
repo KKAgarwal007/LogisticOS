@@ -9,7 +9,7 @@ import TrafficCard from '../components/tracking/TrafficCard';
 import TelemetryFeed from '../components/tracking/TelemetryFeed';
 import { io } from 'socket.io-client';
 
-const socket = io('http://localhost:8080');
+const socket = io('https://logisticos-q046.onrender.com');
 
 const TrackingPage: React.FC = () => {
   const location = useLocation();
@@ -26,7 +26,7 @@ const TrackingPage: React.FC = () => {
     }
     const fetchShipment = async () => {
       try {
-        const res = await axios.get('http://localhost:8080/api/data/shipments');
+        const res = await axios.get('https://logisticos-q046.onrender.com/api/data/shipments');
         const found = res.data.find((s: any) => s.trackingId.toLowerCase() === searchQuery.toLowerCase());
         setShipment(found || null);
       } catch (err) {

@@ -4,7 +4,7 @@ import { Plus, ChevronLeft, ChevronRight } from 'lucide-react';
 import axios from 'axios';
 import { io } from 'socket.io-client';
 
-const socket = io('http://localhost:8080');
+const socket = io('https://logisticos-q046.onrender.com');
 
 export interface CalendarEvent {
   _id: string;
@@ -26,7 +26,7 @@ const CalendarBoard: React.FC<CalendarBoardProps> = ({ onAddSchedule, refreshKey
   useEffect(() => {
     const fetchSchedules = async () => {
       try {
-        const res = await axios.get('http://localhost:8080/api/data/schedules');
+        const res = await axios.get('https://logisticos-q046.onrender.com/api/data/schedules');
         setEvents(res.data);
       } catch (err) {
         console.error('Failed to fetch schedules', err);

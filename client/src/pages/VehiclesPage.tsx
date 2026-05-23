@@ -17,7 +17,7 @@ const VehiclesPage: React.FC = () => {
   useEffect(() => {
     const fetchVehicles = async () => {
       try {
-        const res = await axios.get('http://localhost:8080/api/data/vehicles');
+        const res = await axios.get('https://logisticos-q046.onrender.com/api/data/vehicles');
         setVehicles(res.data);
       } catch (err) {
         console.error('Failed to fetch vehicles', err);

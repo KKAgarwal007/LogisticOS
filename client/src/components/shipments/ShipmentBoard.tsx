@@ -17,7 +17,7 @@ import ShipmentCard, { type Shipment } from './ShipmentCard';
 import axios from 'axios';
 import { io } from 'socket.io-client';
 
-const socket = io('http://localhost:8080');
+const socket = io('https://logisticos-q046.onrender.com');
 
 const columns = [
   { id: 'pending', title: 'Pending', colorClass: 'bg-slate-400' },
@@ -37,7 +37,7 @@ const ShipmentBoard: React.FC<ShipmentBoardProps> = ({ refreshKey = 0 }) => {
   useEffect(() => {
     const fetchShipments = async () => {
       try {
-        const res = await axios.get('http://localhost:8080/api/data/shipments');
+        const res = await axios.get('https://logisticos-q046.onrender.com/api/data/shipments');
         const fetchedShipments = res.data.map((s: any) => ({
           ...s,
           id: s._id
@@ -127,7 +127,7 @@ const ShipmentBoard: React.FC<ShipmentBoardProps> = ({ refreshKey = 0 }) => {
       const currentShipment = prev.find(s => s.id === activeId);
       if (currentShipment) {
         // Fire API call with the correct columnId that handleDragOver set
-        axios.patch(`http://localhost:8080/api/data/shipments/${activeId}`, {
+        axios.patch(`https://logisticos-q046.onrender.com/api/data/shipments/${activeId}`, {
           columnId: currentShipment.columnId
         }).catch(err => console.error('Failed to update shipment column', err));
       }

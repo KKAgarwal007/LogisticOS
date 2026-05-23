@@ -21,7 +21,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onToggleForm }) => {
     e.preventDefault();
     setError('');
     try {
-      const { data } = await axios.post('http://localhost:8080/api/auth/register', {
+      const { data } = await axios.post('https://logisticos-q046.onrender.com/api/auth/register', {
         fullName,
         companyName,
         workEmail: email,

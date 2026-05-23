@@ -19,10 +19,10 @@ const AddScheduleForm: React.FC<AddScheduleFormProps> = ({ onSuccess, onCancel }
     setLoading(true);
     
     try {
-      await axios.post('http://localhost:8080/api/data/schedules', formData);
+      await axios.post('https://logisticos-q046.onrender.com/api/data/schedules', formData);
       
       // Log activity
-      await axios.post('http://localhost:8080/api/data/activities', {
+      await axios.post('https://logisticos-q046.onrender.com/api/data/activities', {
         type: 'update',
         title: 'Schedule Added',
         description: `New ${formData.type} schedule: ${formData.title}.`,

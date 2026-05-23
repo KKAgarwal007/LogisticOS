@@ -20,10 +20,10 @@ const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onSuccess, onCancel }) 
     e.preventDefault();
     setLoading(true);
     try {
-      await axios.post('http://localhost:8080/api/data/vehicles', formData);
+      await axios.post('https://logisticos-q046.onrender.com/api/data/vehicles', formData);
       
       // Also create an activity log for this
-      await axios.post('http://localhost:8080/api/data/activities', {
+      await axios.post('https://logisticos-q046.onrender.com/api/data/activities', {
         type: 'success',
         title: 'New Vehicle Registered',
         description: `Vehicle ${formData.vehicleId} added to the fleet.`,

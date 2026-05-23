@@ -22,10 +22,10 @@ const AddShipmentForm: React.FC<AddShipmentFormProps> = ({ onSuccess, onCancel }
     e.preventDefault();
     setLoading(true);
     try {
-      await axios.post('http://localhost:8080/api/data/shipments', formData);
+      await axios.post('https://logisticos-q046.onrender.com/api/data/shipments', formData);
       
       // Also create an activity log for this
-      await axios.post('http://localhost:8080/api/data/activities', {
+      await axios.post('https://logisticos-q046.onrender.com/api/data/activities', {
         type: 'update',
         title: 'New Shipment Created',
         description: `Shipment ${formData.trackingId}: ${formData.title} to ${formData.destination}.`,

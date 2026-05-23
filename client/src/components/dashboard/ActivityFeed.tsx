@@ -18,7 +18,7 @@ const ActivityFeed: React.FC = () => {
   useEffect(() => {
     const fetchActivities = async () => {
       try {
-        const res = await axios.get('http://localhost:8080/api/data/activities');
+        const res = await axios.get('https://logisticos-q046.onrender.com/api/data/activities');
         setActivities(res.data);
       } catch (err) {
         console.error('Failed to fetch activities', err);

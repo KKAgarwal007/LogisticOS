@@ -15,9 +15,9 @@ const KPICards: React.FC = () => {
     const fetchStats = async () => {
       try {
         const [vehiclesRes, shipmentsRes, driversRes] = await Promise.all([
-          axios.get('http://localhost:8080/api/data/vehicles'),
-          axios.get('http://localhost:8080/api/data/shipments'),
-          axios.get('http://localhost:8080/api/data/drivers')
+          axios.get('https://logisticos-q046.onrender.com/api/data/vehicles'),
+          axios.get('https://logisticos-q046.onrender.com/api/data/shipments'),
+          axios.get('https://logisticos-q046.onrender.com/api/data/drivers')
         ]);
         
         const vehicles = vehiclesRes.data;
