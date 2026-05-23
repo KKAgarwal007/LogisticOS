@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import MainLayout from '../components/layout/MainLayout';
 import TrackingSidebar from '../components/tracking/TrackingSidebar';
@@ -11,7 +12,11 @@ import { io } from 'socket.io-client';
 const socket = io('http://localhost:8080');
 
 const TrackingPage: React.FC = () => {
-  const [searchQuery, setSearchQuery] = useState('');
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const initialId = queryParams.get('id') || '';
+  
+  const [searchQuery, setSearchQuery] = useState(initialId);
   const [shipment, setShipment] = useState<any>(null);
 
   useEffect(() => {

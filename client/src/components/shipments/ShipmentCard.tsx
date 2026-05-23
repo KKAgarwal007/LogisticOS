@@ -2,6 +2,7 @@ import React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { MapPin, Truck, CheckCircle2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export type Priority = 'High' | 'Low' | 'Completed';
 
@@ -23,6 +24,7 @@ interface Props {
 }
 
 const ShipmentCard: React.FC<Props> = ({ shipment }) => {
+  const navigate = useNavigate();
   const {
     attributes,
     listeners,
@@ -59,6 +61,11 @@ const ShipmentCard: React.FC<Props> = ({ shipment }) => {
     return 'bg-slate-500';
   };
 
+  const handleTrackClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigate(`/tracking?id=${shipment.trackingId}`);
+  };
+
   return (
     <div
       ref={setNodeRef}
@@ -68,7 +75,13 @@ const ShipmentCard: React.FC<Props> = ({ shipment }) => {
       className={`bg-slate-900/60 rounded-xl p-5 border border-slate-700/50 cursor-grab active:cursor-grabbing hover:border-slate-600 transition-colors group ${isDragging ? 'opacity-50 ring-2 ring-primary shadow-2xl' : 'shadow-lg'}`}
     >
       <div className="flex justify-between items-start mb-3">
-        <span className="text-white font-mono font-bold text-sm">#{shipment.trackingId || shipment.id}</span>
+        <span 
+          onClick={handleTrackClick}
+          className="text-white font-mono font-bold text-sm cursor-pointer hover:text-cyan-400 transition-colors underline decoration-slate-600 decoration-dashed underline-offset-4"
+          title="Track Shipment"
+        >
+          #{shipment.trackingId || shipment.id}
+        </span>
         <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold tracking-wider uppercase ${getPriorityStyles(shipment.priority)}`}>
           {shipment.priority}
         </span>
