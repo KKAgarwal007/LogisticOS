@@ -1,5 +1,5 @@
 import React from 'react';
-import { Check, Truck, Radio, RadioReceiver, MapPin, Video, Search } from 'lucide-react';
+import { Check, Truck, Radio, MapPin, Search } from 'lucide-react';
 
 interface TrackingSidebarProps {
   shipment?: any;

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Search } from 'lucide-react';
 import axios from 'axios';
 import MainLayout from '../components/layout/MainLayout';
 import TrackingSidebar from '../components/tracking/TrackingSidebar';
@@ -71,7 +70,7 @@ const TrackingPage: React.FC = () => {
           <div className="flex flex-col lg:flex-row h-full max-w-400 mx-auto gap-8 pt-4 pb-4 px-4 lg:px-8 overflow-y-auto lg:overflow-hidden">
             
             {/* Left Sidebar */}
-            <div className="w-full lg:w-[380px] shrink-0 lg:h-full">
+            <div className="w-full lg:w-95 shrink-0 lg:h-full">
               <TrackingSidebar shipment={shipment} searchQuery={searchQuery} onSearchChange={setSearchQuery} />
             </div>
 

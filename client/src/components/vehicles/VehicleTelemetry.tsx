@@ -1,5 +1,5 @@
 import React from 'react';
-import { Map, Edit2, RefreshCw, CheckCircle2, ArrowRight } from 'lucide-react';
+import { RefreshCw, CheckCircle2 } from 'lucide-react';
 import { type Vehicle } from './FleetList';
 
 interface VehicleTelemetryProps {

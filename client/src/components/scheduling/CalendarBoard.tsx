@@ -134,7 +134,7 @@ const CalendarBoard: React.FC<CalendarBoardProps> = ({ onAddSchedule, refreshKey
 
       {/* Calendar Grid */}
       <div className={`flex-1 grid ${gridColsClass} ${gridRowsClass} overflow-hidden`}>
-        {days.map((day, i) => {
+        {days.map((day) => {
           const isCurrentMonth = isSameMonth(day, currentDate);
           const isCurrentDay = isToday(day);
           

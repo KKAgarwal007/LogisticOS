@@ -1,5 +1,5 @@
 import React from 'react';
-import { PlusSquare, UserPlus, Map } from 'lucide-react';
+import { PlusSquare, UserPlus } from 'lucide-react';
 
 interface QuickActionsProps {
   onAddShipment?: () => void;
