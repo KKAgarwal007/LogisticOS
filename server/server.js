@@ -13,7 +13,7 @@ const PORT = process.env.PORT || 8080;
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: true,
+    origin: ['https://logistic-os-z5j5.vercel.app', 'http://localhost:5173'],
     methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE'],
     credentials: true
   }

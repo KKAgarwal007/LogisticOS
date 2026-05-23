@@ -6,7 +6,7 @@ import apiRoutes from './routes/apiRoutes.js';
 const app = express();
 
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: ['https://logistic-os-z5j5.vercel.app', 'http://localhost:5173'],
   credentials: true
 }));
 app.use(express.json());
