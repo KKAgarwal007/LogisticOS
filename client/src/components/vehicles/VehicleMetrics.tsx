@@ -2,7 +2,7 @@ import React from 'react';
 
 const VehicleMetrics: React.FC = () => {
   return (
-    <div className="grid grid-cols-4 gap-6 h-full">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 h-auto lg:h-full">
       <div className="bg-formBg rounded-xl p-5 border border-slate-800 flex flex-col justify-center">
         <h3 className="text-xs font-mono text-slate-400 font-bold tracking-widest mb-4">TOTAL<br/>FLEET</h3>
         <p className="text-3xl text-primary font-light">124</p>

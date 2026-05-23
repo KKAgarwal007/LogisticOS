@@ -8,6 +8,8 @@ import HomePage from './pages/HomePage';
 import VehiclesPage from './pages/VehiclesPage';
 import ShipmentsPage from './pages/ShipmentsPage';
 import DriversPage from './pages/DriversPage';
+import TrackingPage from './pages/TrackingPage';
+import SchedulingPage from './pages/SchedulingPage';
 import { useAuth } from './contexts/AuthContext';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -57,6 +59,22 @@ const App: React.FC = () => {
           element={
             <ProtectedRoute>
               <DriversPage />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/tracking" 
+          element={
+            <ProtectedRoute>
+              <TrackingPage />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/scheduling" 
+          element={
+            <ProtectedRoute>
+              <SchedulingPage />
             </ProtectedRoute>
           } 
         />

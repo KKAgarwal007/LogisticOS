@@ -26,8 +26,8 @@ const FleetList: React.FC = () => {
         </div>
       </div>
 
-      <div className="flex-1 overflow-hidden">
-        <table className="w-full text-left border-collapse">
+      <div className="flex-1 overflow-x-auto min-h-0">
+        <table className="w-full text-left border-collapse min-w-[700px]">
           <thead>
             <tr className="border-b border-slate-800/50 text-xs font-mono tracking-widest text-slate-500 uppercase">
               <th className="py-4 px-6 font-bold">Vehicle<br/>ID</th>

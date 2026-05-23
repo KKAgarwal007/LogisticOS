@@ -1,6 +1,6 @@
 import React from 'react';
 import MainLayout from '../components/layout/MainLayout';
-import DriverCard, { Driver } from '../components/drivers/DriverCard';
+import DriverCard, { type Driver } from '../components/drivers/DriverCard';
 import DriverTimeline from '../components/drivers/DriverTimeline';
 
 const mockDrivers: Driver[] = [

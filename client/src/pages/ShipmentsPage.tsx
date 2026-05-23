@@ -25,8 +25,10 @@ const ShipmentsPage: React.FC = () => {
           <p className="text-sm text-slate-400">Monitor and re-route global supply chains in real-time.</p>
         </div>
         
-        <div className="flex-1 overflow-hidden">
-          <ShipmentBoard />
+        <div className="flex-1 min-h-0 overflow-x-auto snap-x snap-mandatory pb-4">
+          <div className="min-w-[1200px] lg:min-w-0 h-full">
+            <ShipmentBoard />
+          </div>
         </div>
       </div>
     </MainLayout>
