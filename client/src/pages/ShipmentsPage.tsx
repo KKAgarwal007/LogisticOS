@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Filter } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import MainLayout from '../components/layout/MainLayout';
 import ShipmentBoard from '../components/shipments/ShipmentBoard';
 import Modal from '../components/ui/Modal';
@@ -13,7 +13,7 @@ const ShipmentsPage: React.FC = () => {
     <div className="flex space-x-4">
       <button 
         onClick={() => setIsAddModalOpen(true)}
-        className="flex items-center space-x-2 bg-gradient-to-r from-primary/30 to-cyan-300 bg-cyan-200 text-slate-900 rounded-full px-5 py-2 font-bold text-sm transition-all hover:shadow-[0_0_15px_rgba(6,182,212,0.4)]"
+        className="flex items-center space-x-2 bg-linear-to-r from-primary/30 to-cyan-300 bg-cyan-200 text-slate-900 rounded-full px-5 py-2 font-bold text-sm transition-all hover:shadow-[0_0_15px_rgba(6,182,212,0.4)]"
       >
         <Plus className="w-4 h-4" />
         <span>New Shipment</span>
@@ -30,7 +30,7 @@ const ShipmentsPage: React.FC = () => {
         </div>
         
         <div className="flex-1 min-h-0 overflow-x-auto snap-x snap-mandatory pb-4">
-          <div className="min-w-[1200px] lg:min-w-0 h-full">
+          <div className="min-w-300 lg:min-w-0 h-full">
             <ShipmentBoard refreshKey={refreshKey} />
           </div>
         </div>

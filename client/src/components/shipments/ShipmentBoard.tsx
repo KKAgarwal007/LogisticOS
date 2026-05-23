@@ -145,7 +145,7 @@ const ShipmentBoard: React.FC<ShipmentBoardProps> = ({ refreshKey = 0 }) => {
     >
       <div className="flex lg:grid lg:grid-cols-4 gap-6 overflow-x-auto h-full pb-8 snap-x snap-mandatory">
         {columns.map(col => (
-          <div key={col.id} className="min-w-[85vw] sm:min-w-[400px] lg:min-w-0 snap-center h-full">
+          <div key={col.id} className="min-w-[85vw] sm:min-w-100 lg:min-w-0 snap-center h-full">
             <ShipmentColumn 
               id={col.id} 
               title={col.title} 

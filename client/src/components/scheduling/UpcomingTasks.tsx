@@ -1,5 +1,5 @@
 import React from 'react';
-import { CheckCircle2, ListTodo, Plus } from 'lucide-react';
+import { ListTodo } from 'lucide-react';
 
 const UpcomingTasks: React.FC = () => {
   const tasks = [
@@ -39,13 +39,13 @@ const UpcomingTasks: React.FC = () => {
             <div key={idx} className={`relative pl-8 ${task.status === 'past' ? 'opacity-60' : ''}`}>
               {/* Timeline Dot */}
               {task.status === 'past' && (
-                <div className="absolute left-[3px] top-1.5 w-1.5 h-1.5 rounded-full bg-slate-500"></div>
+                <div className="absolute left-0.75 top-1.5 w-1.5 h-1.5 rounded-full bg-slate-500"></div>
               )}
               {task.status === 'active' && (
-                <div className="absolute left-[-2px] top-1.5 w-3 h-3 rounded-full bg-primary border-2 border-slate-900 shadow-[0_0_8px_rgba(6,182,212,0.8)]"></div>
+                <div className="absolute -left-0.5 top-1.5 w-3 h-3 rounded-full bg-primary border-2 border-slate-900 shadow-[0_0_8px_rgba(6,182,212,0.8)]"></div>
               )}
               {task.status === 'upcoming' && (
-                <div className="absolute left-[3px] top-1.5 w-1.5 h-1.5 rounded-full bg-slate-600"></div>
+                <div className="absolute left-0.75 top-1.5 w-1.5 h-1.5 rounded-full bg-slate-600"></div>
               )}
 
               <div className="text-xs font-mono font-bold text-slate-400 mb-1">{task.time}</div>

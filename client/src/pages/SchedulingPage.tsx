@@ -12,9 +12,9 @@ const SchedulingPage: React.FC = () => {
 
   return (
     <MainLayout searchPlaceholder="Search operations...">
-      <div className="max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 h-full">
+      <div className="max-w-400 mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 h-full">
         {/* Main Calendar Area */}
-        <div className="lg:col-span-8 h-[800px] lg:h-full">
+        <div className="lg:col-span-8 h-200 lg:h-full">
           <CalendarBoard 
             onAddSchedule={() => setIsAddModalOpen(true)} 
             refreshKey={refreshKey}
@@ -26,7 +26,7 @@ const SchedulingPage: React.FC = () => {
           <div className="shrink-0 h-auto">
             <PriorityAlerts />
           </div>
-          <div className="flex-1 min-h-[400px]">
+          <div className="flex-1 min-h-100">
             <UpcomingTasks />
           </div>
         </div>

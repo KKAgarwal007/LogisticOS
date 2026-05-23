@@ -1,14 +1,28 @@
 import React from 'react';
-import { Check, Truck, Radio, RadioReceiver, MapPin, Video } from 'lucide-react';
+import { Check, Truck, Radio, RadioReceiver, MapPin, Video, Search } from 'lucide-react';
 
 interface TrackingSidebarProps {
   shipment?: any;
   searchQuery?: string;
+  onSearchChange?: (val: string) => void;
 }
 
-const TrackingSidebar: React.FC<TrackingSidebarProps> = ({ shipment, searchQuery }) => {
+const TrackingSidebar: React.FC<TrackingSidebarProps> = ({ shipment, searchQuery, onSearchChange }) => {
   return (
     <div className="bg-slate-900/80 backdrop-blur-md border border-slate-700/50 rounded-2xl p-8 w-full max-w-sm h-full flex flex-col shadow-2xl">
+      
+      {/* Mobile Search Bar */}
+      <div className="block sm:hidden mb-6 relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+        <input 
+          type="text" 
+          value={searchQuery || ''}
+          onChange={(e) => onSearchChange?.(e.target.value)}
+          placeholder="Trace Shipment ID..."
+          className="w-full bg-slate-950/50 border border-slate-700 rounded-xl py-3 pl-10 pr-4 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-primary/50 transition-all"
+        />
+      </div>
+
       <div className="flex justify-between items-start mb-6">
         <div>
           <h1 className="text-3xl font-bold text-white mb-1">

@@ -53,13 +53,13 @@ const DriversPage: React.FC = () => {
   return (
     <MainLayout topbarAction={topbarAction}>
       <div className="max-w-7xl mx-auto flex flex-col h-full">
-        <div className="flex justify-between items-end mb-8">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-8">
           <div>
             <h1 className="text-2xl font-bold text-white mb-1">Personnel Logistics</h1>
             <p className="text-sm text-slate-400">Real-time monitoring and shift management of {drivers.length} registered operators.</p>
           </div>
           
-          <div className="flex bg-slate-900 rounded-lg p-1 border border-slate-800">
+          <div className="grid grid-cols-3 w-full md:w-auto md:flex bg-slate-900 rounded-lg p-1 border border-slate-800">
             <button 
               onClick={() => setActiveTab('On-Duty')}
               className={`px-6 py-2 text-xs font-mono font-bold rounded-md transition-colors ${activeTab === 'On-Duty' ? 'bg-gradient-to-r from-primary/30 to-cyan-300 bg-cyan-200 text-slate-900 shadow-[0_0_15px_rgba(6,182,212,0.4)]' : 'text-slate-400 hover:text-white'}`}
