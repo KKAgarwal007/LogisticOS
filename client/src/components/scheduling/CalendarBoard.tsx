@@ -2,9 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, eachDayOfInterval, isSameMonth, isToday, addMonths, subMonths, addWeeks, subWeeks, addDays, subDays, isSameDay } from 'date-fns';
 import { Plus, ChevronLeft, ChevronRight } from 'lucide-react';
 import axios from 'axios';
-import { io } from 'socket.io-client';
-
-const socket = io('https://logisticos-q046.onrender.com');
+import socket from '../../socket';
 
 export interface CalendarEvent {
   _id: string;

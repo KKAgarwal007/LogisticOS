@@ -15,9 +15,7 @@ import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import ShipmentColumn from './ShipmentColumn';
 import ShipmentCard, { type Shipment } from './ShipmentCard';
 import axios from 'axios';
-import { io } from 'socket.io-client';
-
-const socket = io('https://logisticos-q046.onrender.com');
+import socket from '../../socket';
 
 const columns = [
   { id: 'pending', title: 'Pending', colorClass: 'bg-slate-400' },

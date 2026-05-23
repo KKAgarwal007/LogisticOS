@@ -7,9 +7,7 @@ import TelemetryMiniCards from '../components/tracking/TelemetryMiniCards';
 import WeatherCard from '../components/tracking/WeatherCard';
 import TrafficCard from '../components/tracking/TrafficCard';
 import TelemetryFeed from '../components/tracking/TelemetryFeed';
-import { io } from 'socket.io-client';
-
-const socket = io('https://logisticos-q046.onrender.com');
+import socket from '../../socket';
 
 const TrackingPage: React.FC = () => {
   const location = useLocation();
