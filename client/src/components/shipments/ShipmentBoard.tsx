@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   DndContext, 
   DragOverlay, 
@@ -14,64 +14,10 @@ import {
 import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import ShipmentColumn from './ShipmentColumn';
 import ShipmentCard, { type Shipment } from './ShipmentCard';
+import axios from 'axios';
+import { io } from 'socket.io-client';
 
-const initialShipments: Shipment[] = [
-  {
-    id: 'LOG-7721',
-    title: 'Micro-Processors Hub B',
-    origin: 'Shenzhen',
-    destination: 'Munich',
-    priority: 'High',
-    progress: 15,
-    progressText: '15% Processed',
-    dueText: 'Due: 24h',
-    columnId: 'pending'
-  },
-  {
-    id: 'LOG-8842',
-    title: 'Textile Batch 401',
-    origin: 'Hanoi',
-    destination: 'Los Angeles',
-    priority: 'Low',
-    progress: 5,
-    progressText: '5% Processed',
-    dueText: 'Due: 5d',
-    columnId: 'pending'
-  },
-  {
-    id: 'LOG-9001',
-    title: 'Medical Equipment Kit',
-    origin: 'Berlin',
-    destination: 'Tokyo',
-    priority: 'High',
-    progress: 40,
-    progressText: '40% Scheduled',
-    dueText: 'Due: 12h',
-    columnId: 'scheduled'
-  },
-  {
-    id: 'LOG-6612',
-    title: 'Electric Vehicle Components',
-    origin: 'Mid-Atlantic Ocean',
-    destination: 'Port',
-    priority: 'Low',
-    progress: 75,
-    progressText: '75% Journey',
-    dueText: 'ETA: 2d',
-    columnId: 'in_transit'
-  },
-  {
-    id: 'LOG-4410',
-    title: 'Automated Server Rack',
-    origin: 'Dublin Data Center',
-    destination: 'Delivered',
-    priority: 'Completed',
-    progress: 100,
-    progressText: 'delivered',
-    dueText: '',
-    columnId: 'delivered'
-  }
-];
+const socket = io('http://localhost:8080');
 
 const columns = [
   { id: 'pending', title: 'Pending', colorClass: 'bg-slate-400' },
@@ -80,9 +26,44 @@ const columns = [
   { id: 'delivered', title: 'Delivered', colorClass: 'bg-emerald-400' }
 ];
 
-const ShipmentBoard: React.FC = () => {
-  const [shipments, setShipments] = useState<Shipment[]>(initialShipments);
+interface ShipmentBoardProps {
+  refreshKey?: number;
+}
+
+const ShipmentBoard: React.FC<ShipmentBoardProps> = ({ refreshKey = 0 }) => {
+  const [shipments, setShipments] = useState<Shipment[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchShipments = async () => {
+      try {
+        const res = await axios.get('http://localhost:8080/api/data/shipments');
+        const fetchedShipments = res.data.map((s: any) => ({
+          ...s,
+          id: s._id
+        }));
+        setShipments(fetchedShipments);
+      } catch (err) {
+        console.error('Failed to fetch shipments', err);
+      }
+    };
+    fetchShipments();
+  }, [refreshKey]);
+
+  useEffect(() => {
+    socket.on('shipment_updated', (updated: any) => {
+      setShipments(prev => prev.map(s => s.id === updated._id ? { ...updated, id: updated._id } : s));
+    });
+
+    socket.on('shipment_created', (created: any) => {
+      setShipments(prev => [{ ...created, id: created._id }, ...prev]);
+    });
+
+    return () => {
+      socket.off('shipment_updated');
+      socket.off('shipment_created');
+    };
+  }, []);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -117,7 +98,7 @@ const ShipmentBoard: React.FC = () => {
 
         if (prev[activeIndex].columnId !== prev[overIndex].columnId) {
           const newShipments = [...prev];
-          newShipments[activeIndex].columnId = newShipments[overIndex].columnId;
+          newShipments[activeIndex] = { ...newShipments[activeIndex], columnId: newShipments[overIndex].columnId };
           return arrayMove(newShipments, activeIndex, overIndex);
         }
         return arrayMove(prev, activeIndex, overIndex);
@@ -130,30 +111,61 @@ const ShipmentBoard: React.FC = () => {
       setShipments(prev => {
         const activeIndex = prev.findIndex(t => t.id === activeId);
         const newShipments = [...prev];
-        newShipments[activeIndex].columnId = overId as string;
+        newShipments[activeIndex] = { ...newShipments[activeIndex], columnId: overId as string };
         return arrayMove(newShipments, activeIndex, activeIndex);
       });
     }
   };
 
-  const handleDragEnd = (event: DragEndEvent) => {
+  const handleDragEnd = async (event: DragEndEvent) => {
     setActiveId(null);
     const { active, over } = event;
     if (!over) return;
 
-    const activeId = active.id;
-    const overId = over.id;
+    const activeId = active.id as string;
+    const overId = over.id as string;
 
     if (activeId === overId) return;
 
-    setShipments(prev => {
-      const activeIndex = prev.findIndex(t => t.id === activeId);
-      const overIndex = prev.findIndex(t => t.id === overId);
-      if (overIndex !== -1) {
-        return arrayMove(prev, activeIndex, overIndex);
+    // Robustly determine target column from dnd-kit's data payload directly
+    let targetColumnId = '';
+    const isOverColumn = columns.some(c => c.id === overId);
+    
+    if (isOverColumn) {
+      targetColumnId = overId;
+    } else {
+      const overShipment = over.data.current?.shipment;
+      if (overShipment) {
+        targetColumnId = overShipment.columnId;
       }
-      return prev;
+    }
+
+    if (!targetColumnId) return;
+
+    // Update UI optimistically
+    setShipments(prev => {
+      const newActiveIndex = prev.findIndex(t => t.id === activeId);
+      const newOverIndex = prev.findIndex(t => t.id === overId);
+      
+      if (newActiveIndex === -1) return prev;
+
+      const newShipments = [...prev];
+      newShipments[newActiveIndex] = { ...newShipments[newActiveIndex], columnId: targetColumnId };
+
+      if (newOverIndex !== -1) {
+        return arrayMove(newShipments, newActiveIndex, newOverIndex);
+      }
+      return newShipments;
     });
+
+    // Make API call
+    try {
+      await axios.patch(`http://localhost:8080/api/data/shipments/${activeId}`, {
+        columnId: targetColumnId
+      });
+    } catch (err) {
+      console.error('Failed to update shipment column', err);
+    }
   };
 
   const activeShipment = shipments.find(s => s.id === activeId);

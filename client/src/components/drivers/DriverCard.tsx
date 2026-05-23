@@ -5,11 +5,11 @@ export interface Driver {
   id: string;
   name: string;
   seed: string;
-  isOnline: boolean;
+  status: 'On-Duty' | 'Off-Duty' | 'On-Leave';
   role: 'Expert' | 'Senior' | 'Junior';
   stars: number;
   vehicle: string;
-  rating: string;
+  rating: number;
   experience: string;
 }
 
@@ -29,7 +29,7 @@ const DriverCard: React.FC<Props> = ({ driver }) => {
               className="w-full h-full object-cover"
             />
           </div>
-          <span className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-formBg ${driver.isOnline ? 'bg-emerald-400' : 'bg-pink-400'}`}></span>
+          <span className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-formBg ${driver.status === 'On-Duty' ? 'bg-emerald-400' : driver.status === 'On-Leave' ? 'bg-amber-400' : 'bg-pink-400'}`}></span>
         </div>
         
         <div className="flex flex-col items-end">
@@ -57,7 +57,7 @@ const DriverCard: React.FC<Props> = ({ driver }) => {
       <div className="mt-auto grid grid-cols-2 gap-4">
         <div>
           <h4 className="text-[10px] font-mono text-slate-500 font-bold tracking-widest uppercase mb-1">Rating</h4>
-          <p className="text-emerald-400 font-bold text-sm">{driver.rating}</p>
+          <p className="text-emerald-400 font-bold text-sm">{driver.rating.toFixed(1)}%</p>
         </div>
         <div>
           <h4 className="text-[10px] font-mono text-slate-500 font-bold tracking-widest uppercase mb-1">Exp</h4>

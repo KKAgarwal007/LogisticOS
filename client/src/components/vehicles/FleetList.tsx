@@ -1,20 +1,20 @@
 import React from 'react';
 import { Truck, Navigation, Filter, Download } from 'lucide-react';
 
-interface Vehicle {
-  id: string;
-  classType: string;
+export interface Vehicle {
+  vehicleId: string;
+  class: string;
   capacity: string;
-  isActive: boolean;
+  status: string;
 }
 
-const FleetList: React.FC = () => {
-  const vehicles: Vehicle[] = [
-    { id: 'VX-8802', classType: 'Heavy Duty', capacity: '24.5 / 25T', isActive: true },
-    { id: 'VN-4412', classType: 'Van', capacity: '3.2 / 4T', isActive: false },
-    { id: 'HD-0091', classType: 'Heavy Duty', capacity: '32.1 / 35T', isActive: false },
-    { id: 'VN-4455', classType: 'Van', capacity: '4.5 / 5T', isActive: false },
-  ];
+interface FleetListProps {
+  vehicles: Vehicle[];
+  selectedVehicleId: string | null;
+  onSelectVehicle: (id: string) => void;
+}
+
+const FleetList: React.FC<FleetListProps> = ({ vehicles, selectedVehicleId, onSelectVehicle }) => {
 
   return (
     <div className="bg-formBg rounded-xl border border-slate-800 h-full flex flex-col">
@@ -36,20 +36,21 @@ const FleetList: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {vehicles.map((v, i) => (
+            {vehicles.map((v) => (
               <tr 
-                key={v.id} 
-                className={`border-b border-slate-800/50 transition-colors cursor-pointer ${v.isActive ? 'bg-primary/5 border-l-2 border-l-primary' : 'hover:bg-slate-800/30'}`}
+                key={v.vehicleId} 
+                onClick={() => onSelectVehicle(v.vehicleId)}
+                className={`border-b border-slate-800/50 transition-colors cursor-pointer ${selectedVehicleId === v.vehicleId ? 'bg-primary/5 border-l-2 border-l-primary' : 'hover:bg-slate-800/30'}`}
               >
-                <td className={`py-5 px-6 font-mono text-sm font-bold ${v.isActive ? 'text-primary' : 'text-slate-300'}`}>
-                  {v.id}
+                <td className={`py-5 px-6 font-mono text-sm font-bold ${selectedVehicleId === v.vehicleId ? 'text-primary' : 'text-slate-300'}`}>
+                  {v.vehicleId}
                 </td>
                 <td className="py-5 px-6 flex items-center space-x-3 text-sm text-slate-300">
-                  {v.classType === 'Van' ? <Navigation className="w-4 h-4 text-slate-500 rotate-90" /> : <Truck className="w-4 h-4 text-slate-500" />}
-                  <span>{v.classType}</span>
+                  {v.class === 'Electric Van' || v.class === 'Light Transport' ? <Navigation className="w-4 h-4 text-slate-500 rotate-90" /> : <Truck className="w-4 h-4 text-slate-500" />}
+                  <span>{v.class}</span>
                 </td>
                 <td className="py-5 px-6 text-sm text-slate-400 font-mono">
-                  {v.capacity}
+                  {v.capacity} kg
                 </td>
               </tr>
             ))}

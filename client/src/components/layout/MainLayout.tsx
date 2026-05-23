@@ -7,16 +7,18 @@ interface MainLayoutProps {
   topbarAction?: React.ReactNode;
   transparentBackground?: boolean;
   searchPlaceholder?: string;
+  searchValue?: string;
+  onSearchChange?: (val: string) => void;
 }
 
-const MainLayout: React.FC<MainLayoutProps> = ({ children, topbarAction, transparentBackground, searchPlaceholder }) => {
+const MainLayout: React.FC<MainLayoutProps> = ({ children, topbarAction, transparentBackground, searchPlaceholder, searchValue, onSearchChange }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <div className={`flex h-screen overflow-hidden selection:bg-primary/30 ${transparentBackground ? 'bg-transparent' : 'bg-background'}`}>
       <Sidebar isOpen={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
       <div className="flex-1 flex flex-col relative w-full min-w-0">
-        <Topbar action={topbarAction} searchPlaceholder={searchPlaceholder} onMenuClick={() => setMobileMenuOpen(true)} />
+        <Topbar action={topbarAction} searchPlaceholder={searchPlaceholder} searchValue={searchValue} onSearchChange={onSearchChange} onMenuClick={() => setMobileMenuOpen(true)} />
         
         {/* Main Content Area */}
         <main className={`flex-1 overflow-y-auto ${transparentBackground ? 'bg-transparent p-0 pb-0' : 'p-8 bg-slate-900/40 pb-16'}`}>

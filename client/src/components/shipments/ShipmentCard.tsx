@@ -7,13 +7,14 @@ export type Priority = 'High' | 'Low' | 'Completed';
 
 export interface Shipment {
   id: string;
+  trackingId: string;
   title: string;
   origin: string;
   destination: string;
   priority: Priority;
   progress: number;
-  progressText: string;
-  dueText: string;
+  progressText?: string;
+  dueText?: string;
   columnId: string;
 }
 
@@ -67,7 +68,7 @@ const ShipmentCard: React.FC<Props> = ({ shipment }) => {
       className={`bg-slate-900/60 rounded-xl p-5 border border-slate-700/50 cursor-grab active:cursor-grabbing hover:border-slate-600 transition-colors group ${isDragging ? 'opacity-50 ring-2 ring-primary shadow-2xl' : 'shadow-lg'}`}
     >
       <div className="flex justify-between items-start mb-3">
-        <span className="text-white font-mono font-bold text-sm">#{shipment.id}</span>
+        <span className="text-white font-mono font-bold text-sm">#{shipment.trackingId || shipment.id}</span>
         <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold tracking-wider uppercase ${getPriorityStyles(shipment.priority)}`}>
           {shipment.priority}
         </span>

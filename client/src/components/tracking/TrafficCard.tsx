@@ -27,10 +27,6 @@ const TrafficCard: React.FC = () => {
           <p className="text-sm text-slate-300 leading-relaxed mb-6">
             Congestion detected near Exit 14. AI rerouting suggested <span className="text-white font-bold">(+6 mins)</span>.
           </p>
-          
-          <button className="bg-slate-800/60 backdrop-blur-md border border-slate-700 text-slate-200 text-xs font-mono font-bold tracking-widest uppercase px-6 py-2.5 rounded-lg hover:bg-slate-700 hover:text-white transition-all">
-            Apply Auto-Reroute
-          </button>
         </div>
       </div>
     </div>

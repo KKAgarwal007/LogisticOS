@@ -32,9 +32,6 @@ const DriverTimeline: React.FC = () => {
     <div className="bg-formBg rounded-xl border border-slate-800 shadow-xl overflow-hidden mt-8">
       <div className="p-6 border-b border-slate-800/50 flex justify-between items-center">
         <h2 className="text-lg font-bold text-slate-200">Driver Activity Timeline</h2>
-        <button className="text-xs font-mono font-bold tracking-widest text-primary hover:text-white transition-colors uppercase">
-          Export Logs
-        </button>
       </div>
       
       <div className="p-6 space-y-4">

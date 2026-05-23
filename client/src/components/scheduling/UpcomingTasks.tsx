@@ -20,12 +20,6 @@ const UpcomingTasks: React.FC = () => {
       title: 'Fleet Maintenance Call',
       desc: 'Meeting with Mechanical Team.',
       status: 'upcoming'
-    },
-    {
-      time: '04:45 PM',
-      title: 'Shift Handover',
-      desc: '',
-      status: 'upcoming'
     }
   ];
 
@@ -62,10 +56,6 @@ const UpcomingTasks: React.FC = () => {
         </div>
       </div>
 
-      {/* Floating Action Button */}
-      <button className="absolute bottom-6 right-6 w-14 h-14 bg-purple-600 hover:bg-purple-500 text-white rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(147,51,234,0.6)] transition-transform hover:scale-110 z-10">
-        <Plus className="w-6 h-6" />
-      </button>
     </div>
   );
 };

@@ -6,9 +6,11 @@ interface TopbarProps {
   action?: React.ReactNode;
   searchPlaceholder?: string;
   onMenuClick: () => void;
+  searchValue?: string;
+  onSearchChange?: (val: string) => void;
 }
 
-const Topbar: React.FC<TopbarProps> = ({ action, searchPlaceholder = "Global Fleet Search...", onMenuClick }) => {
+const Topbar: React.FC<TopbarProps> = ({ action, searchPlaceholder = "Global Fleet Search...", onMenuClick, searchValue, onSearchChange }) => {
   const { user, logout } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
@@ -25,6 +27,8 @@ const Topbar: React.FC<TopbarProps> = ({ action, searchPlaceholder = "Global Fle
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
           <input
             type="text"
+            value={searchValue}
+            onChange={e => onSearchChange?.(e.target.value)}
             placeholder={searchPlaceholder}
             className="w-full bg-slate-900/60 border border-slate-800 rounded-full py-2.5 pl-12 pr-4 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all"
           />

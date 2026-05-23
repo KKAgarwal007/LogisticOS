@@ -1,19 +1,59 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Truck, Activity, Package, UserCircle, TriangleAlert } from 'lucide-react';
+import axios from 'axios';
 
 const KPICards: React.FC = () => {
+  const [stats, setStats] = useState({
+    totalVehicles: 0,
+    activeDeliveries: 0,
+    pendingShipments: 0,
+    delayed: 0,
+    activeDrivers: 0
+  });
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const [vehiclesRes, shipmentsRes, driversRes] = await Promise.all([
+          axios.get('http://localhost:8080/api/data/vehicles'),
+          axios.get('http://localhost:8080/api/data/shipments'),
+          axios.get('http://localhost:8080/api/data/drivers')
+        ]);
+        
+        const vehicles = vehiclesRes.data;
+        const shipments = shipmentsRes.data;
+        const drivers = driversRes.data;
+
+        setStats({
+          totalVehicles: vehicles.length,
+          activeDeliveries: shipments.filter((s: any) => s.columnId === 'in_transit').length,
+          pendingShipments: shipments.filter((s: any) => s.columnId === 'pending').length,
+          delayed: 0, // Placeholder
+          activeDrivers: drivers.filter((d: any) => d.status === 'On-Duty').length
+        });
+      } catch (err) {
+        console.error('Failed to fetch KPI stats', err);
+      }
+    };
+    fetchStats();
+    
+    // Auto refresh stats every 30s
+    const interval = setInterval(fetchStats, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
   const cards = [
     {
       title: 'Total Vehicles',
-      value: '142',
-      status: '+12%',
+      value: stats.totalVehicles.toString(),
+      status: 'Live',
       statusColor: 'text-white font-bold',
       icon: Truck,
       glow: 'shadow-[0_-2px_10px_rgba(255,255,255,0.1)]',
     },
     {
       title: 'Active Deliveries',
-      value: '38',
+      value: stats.activeDeliveries.toString(),
       status: 'Active',
       statusColor: 'text-emerald-400',
       icon: Activity,
@@ -21,7 +61,7 @@ const KPICards: React.FC = () => {
     },
     {
       title: 'Pending Shipments',
-      value: '12',
+      value: stats.pendingShipments.toString(),
       status: 'Queue',
       statusColor: 'text-purple-400',
       icon: Package,
@@ -29,7 +69,7 @@ const KPICards: React.FC = () => {
     },
     {
       title: 'Drivers Active',
-      value: '84',
+      value: stats.activeDrivers.toString(),
       status: 'On-Duty',
       statusColor: 'text-blue-400',
       icon: UserCircle,
@@ -37,7 +77,7 @@ const KPICards: React.FC = () => {
     },
     {
       title: 'Delayed Deliveries',
-      value: '3',
+      value: stats.delayed.toString(),
       status: 'Critical',
       statusColor: 'text-red-400',
       icon: TriangleAlert,

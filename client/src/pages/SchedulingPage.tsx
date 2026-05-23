@@ -1,16 +1,24 @@
-import React from 'react';
+import React, { useState } from 'react';
 import MainLayout from '../components/layout/MainLayout';
 import CalendarBoard from '../components/scheduling/CalendarBoard';
 import PriorityAlerts from '../components/scheduling/PriorityAlerts';
 import UpcomingTasks from '../components/scheduling/UpcomingTasks';
+import Modal from '../components/ui/Modal';
+import AddScheduleForm from '../components/forms/AddScheduleForm';
 
 const SchedulingPage: React.FC = () => {
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
+
   return (
     <MainLayout searchPlaceholder="Search operations...">
       <div className="max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 h-full">
         {/* Main Calendar Area */}
         <div className="lg:col-span-8 h-[800px] lg:h-full">
-          <CalendarBoard />
+          <CalendarBoard 
+            onAddSchedule={() => setIsAddModalOpen(true)} 
+            refreshKey={refreshKey}
+          />
         </div>
 
         {/* Right Side Alerts & Tasks */}
@@ -23,6 +31,20 @@ const SchedulingPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      <Modal 
+        isOpen={isAddModalOpen} 
+        onClose={() => setIsAddModalOpen(false)} 
+        title="Schedule New Event"
+      >
+        <AddScheduleForm 
+          onSuccess={() => {
+            setIsAddModalOpen(false);
+            setRefreshKey(prev => prev + 1);
+          }} 
+          onCancel={() => setIsAddModalOpen(false)} 
+        />
+      </Modal>
     </MainLayout>
   );
 };

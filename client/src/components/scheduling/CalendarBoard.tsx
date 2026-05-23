@@ -1,40 +1,75 @@
-import React, { useState } from 'react';
-import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, eachDayOfInterval, isSameMonth, isToday, addMonths, subMonths } from 'date-fns';
+import React, { useState, useEffect } from 'react';
+import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, eachDayOfInterval, isSameMonth, isToday, addMonths, subMonths, addWeeks, subWeeks, addDays, subDays, isSameDay } from 'date-fns';
 import { Plus, ChevronLeft, ChevronRight } from 'lucide-react';
+import axios from 'axios';
+import { io } from 'socket.io-client';
 
-interface CalendarEvent {
-  id: string;
-  day: number;
+const socket = io('http://localhost:8080');
+
+export interface CalendarEvent {
+  _id: string;
+  date: string;
   title: string;
   type: 'express' | 'bulk' | 'maintenance';
 }
 
-const mockEvents: CalendarEvent[] = [
-  { id: '1', day: 1, title: 'TX-402 Berlin Dispatch', type: 'express' },
-  { id: '2', day: 3, title: 'Van-9 Routine Checkup', type: 'maintenance' },
-  { id: '3', day: 5, title: 'Sea-Port Bulk Load', type: 'bulk' },
-  { id: '4', day: 5, title: 'AMS-01 Direct', type: 'express' },
-  { id: '5', day: 9, title: 'FRA Hub Connection', type: 'express' },
-  { id: '6', day: 11, title: 'Steel-X Logistics', type: 'bulk' },
-  { id: '7', day: 16, title: 'Driver Training Sem.', type: 'maintenance' },
-];
+interface CalendarBoardProps {
+  onAddSchedule?: () => void;
+  refreshKey?: number;
+}
 
-const CalendarBoard: React.FC = () => {
+const CalendarBoard: React.FC<CalendarBoardProps> = ({ onAddSchedule, refreshKey = 0 }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [viewMode, setViewMode] = useState<'month' | 'week' | 'day'>('month');
+  const [events, setEvents] = useState<CalendarEvent[]>([]);
 
-  const monthStart = startOfMonth(currentDate);
-  const monthEnd = endOfMonth(monthStart);
-  const startDate = startOfWeek(monthStart);
-  const endDate = endOfWeek(monthEnd);
+  useEffect(() => {
+    const fetchSchedules = async () => {
+      try {
+        const res = await axios.get('http://localhost:8080/api/data/schedules');
+        setEvents(res.data);
+      } catch (err) {
+        console.error('Failed to fetch schedules', err);
+      }
+    };
+    fetchSchedules();
+  }, [refreshKey]);
 
-  const dateFormat = "d";
-  const days = eachDayOfInterval({
-    start: startDate,
-    end: endDate
-  });
+  useEffect(() => {
+    const handleNewSchedule = (schedule: CalendarEvent) => {
+      setEvents(prev => [...prev, schedule]);
+    };
+    socket.on('schedule_created', handleNewSchedule);
+    return () => {
+      socket.off('schedule_created', handleNewSchedule);
+    };
+  }, []);
 
-  const nextMonth = () => setCurrentDate(addMonths(currentDate, 1));
-  const prevMonth = () => setCurrentDate(subMonths(currentDate, 1));
+  let startDate, endDate;
+  if (viewMode === 'month') {
+    startDate = startOfWeek(startOfMonth(currentDate));
+    endDate = endOfWeek(endOfMonth(currentDate));
+  } else if (viewMode === 'week') {
+    startDate = startOfWeek(currentDate);
+    endDate = endOfWeek(currentDate);
+  } else {
+    startDate = currentDate;
+    endDate = currentDate;
+  }
+
+  const days = eachDayOfInterval({ start: startDate, end: endDate });
+
+  const nextPeriod = () => {
+    if (viewMode === 'month') setCurrentDate(addMonths(currentDate, 1));
+    else if (viewMode === 'week') setCurrentDate(addWeeks(currentDate, 1));
+    else setCurrentDate(addDays(currentDate, 1));
+  };
+
+  const prevPeriod = () => {
+    if (viewMode === 'month') setCurrentDate(subMonths(currentDate, 1));
+    else if (viewMode === 'week') setCurrentDate(subWeeks(currentDate, 1));
+    else setCurrentDate(subDays(currentDate, 1));
+  };
 
   const getEventStyle = (type: string) => {
     switch (type) {
@@ -54,19 +89,22 @@ const CalendarBoard: React.FC = () => {
     }
   };
 
+  const gridColsClass = viewMode === 'day' ? 'grid-cols-1' : 'grid-cols-7';
+  const gridRowsClass = viewMode === 'month' ? 'grid-rows-5' : 'grid-rows-1';
+
   return (
     <div className="bg-formBg rounded-xl border border-slate-800 h-full flex flex-col shadow-2xl overflow-hidden">
       {/* Header */}
-      <div className="p-6 border-b border-slate-800 flex justify-between items-start">
+      <div className="p-6 border-b border-slate-800 flex justify-between items-start flex-wrap gap-4">
         <div>
           <div className="flex items-center space-x-4 mb-4">
             <h2 className="text-xl font-bold text-white tracking-wide flex items-center">
-              <button onClick={prevMonth} className="mr-2 hover:text-primary transition-colors"><ChevronLeft className="w-5 h-5" /></button>
-              {format(currentDate, "MMMM yyyy")}
-              <button onClick={nextMonth} className="ml-2 hover:text-primary transition-colors"><ChevronRight className="w-5 h-5" /></button>
+              <button onClick={prevPeriod} className="mr-2 hover:text-primary transition-colors"><ChevronLeft className="w-5 h-5" /></button>
+              {viewMode === 'day' ? format(currentDate, "MMMM d, yyyy") : format(currentDate, "MMMM yyyy")}
+              <button onClick={nextPeriod} className="ml-2 hover:text-primary transition-colors"><ChevronRight className="w-5 h-5" /></button>
             </h2>
           </div>
-          <div className="flex space-x-6 text-xs font-mono text-slate-400 font-bold tracking-widest">
+          <div className="flex space-x-6 text-xs font-mono text-slate-400 font-bold tracking-widest flex-wrap gap-y-2">
             <span className="flex items-center"><span className="w-2 h-2 rounded-full bg-cyan-400 mr-2 shadow-[0_0_8px_rgba(6,182,212,0.8)]"></span> Express Transit</span>
             <span className="flex items-center"><span className="w-2 h-2 rounded-full bg-emerald-400 mr-2 shadow-[0_0_8px_rgba(52,211,153,0.8)]"></span> Bulk Carrier</span>
             <span className="flex items-center"><span className="w-2 h-2 rounded-full bg-purple-400 mr-2 shadow-[0_0_8px_rgba(192,132,252,0.8)]"></span> Maintenance</span>
@@ -75,48 +113,56 @@ const CalendarBoard: React.FC = () => {
 
         <div className="flex items-center space-x-4">
           <div className="flex bg-slate-900 rounded-lg p-1 border border-slate-800">
-            <button className="px-5 py-2 text-xs font-mono font-bold rounded-md bg-slate-700 text-white shadow-lg">Month</button>
-            <button className="px-5 py-2 text-xs font-mono font-bold rounded-md text-slate-400 hover:text-white transition-colors">Week</button>
-            <button className="px-5 py-2 text-xs font-mono font-bold rounded-md text-slate-400 hover:text-white transition-colors">Day</button>
+            <button onClick={() => setViewMode('month')} className={`px-5 py-2 text-xs font-mono font-bold rounded-md transition-colors ${viewMode === 'month' ? 'bg-slate-700 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}>Month</button>
+            <button onClick={() => setViewMode('week')} className={`px-5 py-2 text-xs font-mono font-bold rounded-md transition-colors ${viewMode === 'week' ? 'bg-slate-700 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}>Week</button>
+            <button onClick={() => setViewMode('day')} className={`px-5 py-2 text-xs font-mono font-bold rounded-md transition-colors ${viewMode === 'day' ? 'bg-slate-700 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}>Day</button>
           </div>
-          <button className="w-10 h-10 flex items-center justify-center bg-gradient-to-r from-primary/30 to-cyan-300 bg-cyan-200 text-slate-900 rounded-lg transition-transform hover:scale-105 shadow-[0_0_15px_rgba(6,182,212,0.4)]">
+          <button onClick={onAddSchedule} className="w-10 h-10 flex items-center justify-center bg-gradient-to-r from-primary/30 to-cyan-300 bg-cyan-200 text-slate-900 rounded-lg transition-transform hover:scale-105 shadow-[0_0_15px_rgba(6,182,212,0.4)]">
             <Plus className="w-5 h-5" />
           </button>
         </div>
       </div>
 
-      {/* Calendar Grid Header */}
-      <div className="grid grid-cols-7 border-b border-slate-800 bg-slate-900/50">
-        {['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'].map(day => (
-          <div key={day} className="py-4 text-center text-xs font-mono font-bold tracking-widest text-slate-400">
-            {day}
-          </div>
-        ))}
-      </div>
+      {/* Calendar Grid Header (Hidden in day view) */}
+      {viewMode !== 'day' && (
+        <div className="grid grid-cols-7 border-b border-slate-800 bg-slate-900/50">
+          {['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'].map(day => (
+            <div key={day} className="py-4 text-center text-xs font-mono font-bold tracking-widest text-slate-400">
+              {day}
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Calendar Grid */}
-      <div className="flex-1 grid grid-cols-7 grid-rows-5 overflow-hidden">
+      <div className={`flex-1 grid ${gridColsClass} ${gridRowsClass} overflow-hidden`}>
         {days.map((day, i) => {
-          const isCurrentMonth = isSameMonth(day, monthStart);
+          const isCurrentMonth = isSameMonth(day, currentDate);
           const isCurrentDay = isToday(day);
-          const dayNumber = parseInt(format(day, dateFormat));
-          const dayEvents = isCurrentMonth ? mockEvents.filter(e => e.day === dayNumber) : [];
+          
+          const dayEvents = events.filter(e => {
+            const eventDate = new Date(e.date);
+            return isSameDay(eventDate, day);
+          });
 
           return (
             <div 
               key={day.toString()} 
-              className={`min-h-[80px] md:min-h-[120px] border-r border-b border-slate-800/50 p-1 md:p-2 transition-colors hover:bg-slate-800/20 ${!isCurrentMonth ? 'bg-slate-900/20 opacity-50' : ''} ${isCurrentDay ? 'bg-primary/5' : ''}`}
+              className={`border-r border-b border-slate-800/50 p-2 md:p-3 transition-colors hover:bg-slate-800/20 overflow-y-auto custom-scrollbar 
+                ${!isCurrentMonth && viewMode === 'month' ? 'bg-slate-900/20 opacity-50' : ''} 
+                ${isCurrentDay ? 'bg-primary/5' : ''}
+              `}
             >
-              <div className={`text-xs md:text-sm font-mono font-bold mb-1 md:mb-2 text-center md:text-left ${isCurrentDay ? 'text-primary' : 'text-slate-300'} ${isCurrentMonth ? '' : 'text-slate-600'}`}>
-                {format(day, dateFormat)}
+              <div className={`text-xs md:text-sm font-mono font-bold mb-2 md:mb-3 text-center md:text-left ${isCurrentDay ? 'text-primary' : 'text-slate-300'} ${isCurrentMonth || viewMode !== 'month' ? '' : 'text-slate-600'}`}>
+                {viewMode === 'day' ? format(day, "EEEE, MMMM d") : format(day, "d")}
               </div>
               
               {/* Desktop View: Full Labels */}
-              <div className="space-y-1.5 hidden md:block">
+              <div className="space-y-2 hidden md:block">
                 {dayEvents.map(event => (
                   <div 
-                    key={event.id} 
-                    className={`text-[10px] px-2 py-1.5 rounded-sm font-bold leading-tight cursor-pointer hover:opacity-80 transition-opacity ${getEventStyle(event.type)}`}
+                    key={event._id} 
+                    className={`text-[11px] px-2 py-2 rounded-sm font-bold leading-tight cursor-pointer hover:opacity-80 transition-opacity ${getEventStyle(event.type)}`}
                   >
                     {event.title}
                   </div>
@@ -127,7 +173,7 @@ const CalendarBoard: React.FC = () => {
               <div className="flex flex-wrap justify-center gap-1 mt-1 md:hidden">
                 {dayEvents.map(event => (
                   <div 
-                    key={event.id} 
+                    key={event._id} 
                     className={`w-2 h-2 rounded-full shadow-sm ${getEventDotColor(event.type)}`}
                   ></div>
                 ))}

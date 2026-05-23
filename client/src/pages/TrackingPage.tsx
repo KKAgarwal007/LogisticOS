@@ -1,12 +1,52 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import MainLayout from '../components/layout/MainLayout';
 import TrackingSidebar from '../components/tracking/TrackingSidebar';
 import TelemetryMiniCards from '../components/tracking/TelemetryMiniCards';
 import WeatherCard from '../components/tracking/WeatherCard';
 import TrafficCard from '../components/tracking/TrafficCard';
 import TelemetryFeed from '../components/tracking/TelemetryFeed';
+import { io } from 'socket.io-client';
+
+const socket = io('http://localhost:8080');
 
 const TrackingPage: React.FC = () => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [shipment, setShipment] = useState<any>(null);
+
+  useEffect(() => {
+    if (!searchQuery) {
+      setShipment(null);
+      return;
+    }
+    const fetchShipment = async () => {
+      try {
+        const res = await axios.get('http://localhost:8080/api/data/shipments');
+        const found = res.data.find((s: any) => s.trackingId.toLowerCase() === searchQuery.toLowerCase());
+        setShipment(found || null);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    const timeoutId = setTimeout(fetchShipment, 500); // Debounce
+    return () => clearTimeout(timeoutId);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    const handleUpdate = (updated: any) => {
+      setShipment((prev: any) => {
+        if (prev && prev._id === updated._id) {
+          return updated;
+        }
+        return prev;
+      });
+    };
+
+    socket.on('shipment_updated', handleUpdate);
+    return () => {
+      socket.off('shipment_updated', handleUpdate);
+    };
+  }, []);
   return (
     <div className="relative min-h-screen bg-slate-950">
       {/* Map Background Layer */}
@@ -19,12 +59,17 @@ const TrackingPage: React.FC = () => {
 
       {/* UI Content Layer */}
       <div className="relative z-10 h-screen overflow-hidden flex flex-col">
-        <MainLayout transparentBackground searchPlaceholder="Trace Shipment ID...">
+        <MainLayout 
+          transparentBackground 
+          searchPlaceholder="Trace Shipment ID... (e.g. LOG-1234)"
+          searchValue={searchQuery}
+          onSearchChange={setSearchQuery}
+        >
           <div className="flex flex-col lg:flex-row h-full max-w-[1600px] mx-auto gap-8 pt-4 pb-4 px-4 lg:px-8 overflow-y-auto lg:overflow-hidden">
             
             {/* Left Sidebar */}
             <div className="w-full lg:w-[380px] shrink-0 lg:h-full">
-              <TrackingSidebar />
+              <TrackingSidebar shipment={shipment} searchQuery={searchQuery} />
             </div>
 
             {/* Right Dashboards Area */}
