@@ -7,8 +7,7 @@ import TelemetryMiniCards from '../components/tracking/TelemetryMiniCards';
 import WeatherCard from '../components/tracking/WeatherCard';
 import TrafficCard from '../components/tracking/TrafficCard';
 import TelemetryFeed from '../components/tracking/TelemetryFeed';
-import socket from '../../socket';
-
+import socket from '../socket';
 const TrackingPage: React.FC = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
